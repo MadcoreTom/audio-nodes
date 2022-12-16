@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+          html, body {
+            padding:0;
+            margin:0;
+        }
+        svg {
+            font-family: sans-serif;
+            font-size:16px;
+            background-color: #ffffff;
+            opacity: 1;
+            background-image: radial-gradient(#eaecf4 1.6px, #ffffff 1.6px);
+            background-size: 32px 32px;
+            -webkit-user-select: none;
+            user-select: none;
+            stroke-width: 1.5;
+        }
+        .root {
+            width:100vw;
+            height:100vh;
+            overflow:hidden;
+        }
+
+        .main {
+            display: flex;
+            padding:0;
+            margin:0;
+            width:100vw;
+            height:100vh;
+            overflow:hidden;
+        }
+        .main>:first-child{
+            flex-grow:1;
+            height:100%;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="root"></div>
+    <script src="js/app.js"></script>
+</body>
+
+</html>
