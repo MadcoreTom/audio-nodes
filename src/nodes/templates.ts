@@ -1,15 +1,25 @@
 export type NodeTemplate = {
     width: number,
     height:number,
-    controls: AnyControlTemplate[]
+    controls: AnyControlTemplate[],
+    inputs: {type:"control"|"wave", name:string}[],
+    outputs: {type:"control"|"wave", name:string}[]
     // TODO and more
 }
 
 export const NODE_TEMPLATES: {[id:string]:NodeTemplate} = {
     gain: {
-        width: 50,
+        width: 80,
         height:50,
-        controls: []
+        controls: [],
+        inputs: [{
+            type:"wave",
+            name:"gain"
+        }],
+        outputs:[{
+            type:"wave",
+            name:"sig"
+        }]
     },
     osc: {
         width: 100,
@@ -22,12 +32,22 @@ export const NODE_TEMPLATES: {[id:string]:NodeTemplate} = {
             min: 100,
             max:1000
         },{
-            type:"dial",
+            type:"option",
             x:120,
             y:20,
-            label: "freq",
-            min: 100,
-            max:1000
+            label: "shape",
+            options: ["SIN","SAW","SQR"]
+        }],
+        inputs: [{
+            type:"wave",
+            name:"freq"
+        },{
+            type:"control",
+            name:"sync"
+        }],
+        outputs:[{
+            type:"wave",
+            name:"sig"
         }]
     }
 }
@@ -46,4 +66,9 @@ export type DialControlTemplate = ControlTemplate & {
     max:number
 }
 
-export type AnyControlTemplate = DialControlTemplate;
+export type OptionControlTemplate = ControlTemplate & {
+    type: "option",
+    options:string[]
+}
+
+export type AnyControlTemplate = DialControlTemplate | OptionControlTemplate;

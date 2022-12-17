@@ -27,7 +27,7 @@ nodes:[
         controlValues:[]
     },
     {
-        x:30,
+        x:120,
         y:10,
         id:1,
         template:"gain",
@@ -38,7 +38,7 @@ nodes:[
         y:300,
         id:1,
         template:"osc",
-        controlValues:[30, 900]
+        controlValues:[30, "SQR"]
     }
 ]
     },
