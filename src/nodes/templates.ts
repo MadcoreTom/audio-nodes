@@ -2,6 +2,7 @@ export type NodeTemplate = {
     width: number,
     height:number,
     controls: AnyControlTemplate[],
+    defaultControlValues: any[],
     inputs: {type:"control"|"wave", name:string}[],
     outputs: {type:"control"|"wave", name:string}[]
     // TODO and more
@@ -19,7 +20,8 @@ export const NODE_TEMPLATES: {[id:string]:NodeTemplate} = {
         outputs:[{
             type:"wave",
             name:"sig"
-        }]
+        }],
+        defaultControlValues:[]
     },
     osc: {
         width: 100,
@@ -48,14 +50,16 @@ export const NODE_TEMPLATES: {[id:string]:NodeTemplate} = {
         outputs:[{
             type:"wave",
             name:"sig"
-        }]
+        }],
+        defaultControlValues:[200, "SAW"]
     }, 
     out: {
         width: 50,
         height: 50,
         controls: [],
         inputs: [{type:"wave", name:"sig"}],
-        outputs:[]
+        outputs:[],
+        defaultControlValues:[]
     }
 }
 

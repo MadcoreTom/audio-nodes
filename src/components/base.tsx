@@ -72,7 +72,6 @@ function Wire(props: { outNode: number, outIdx: number, inNode: number, inIdx: n
     const inX = inputNode.x;
     const inY = ((props.inIdx + 1) / (inputTemplate.inputs.length + 1)) *inputTemplate.height+ inputNode.y;
 
-console.log(inY,outY)
     return <line
     x1={outX }
     y1={outY }

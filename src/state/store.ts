@@ -1,4 +1,5 @@
 import { configureStore, createSlice } from '@reduxjs/toolkit'
+import { NODE_TEMPLATES } from '../nodes/templates';
 export type Node = {
     x: number,
     y: number,
@@ -79,6 +80,15 @@ const mainSlice = createSlice({
             }
             state.mousePos = [action.payload[2],action.payload[3]];
         },
+        addNode:(state: MainState, action:{payload:{template:string}})=>{
+            state.nodes.push({
+                id:state.nodes.length,
+                x:0,
+                y:0,
+                template:action.payload.template,
+                controlValues: [...NODE_TEMPLATES[action.payload.template].defaultControlValues] 
+            })
+        },
         joinWire: (state: MainState, action: { payload: { isInput: boolean, nodeIdx: number, ioIdx: number } }) => {
             // TODO block pluging into yourself, or loops, or connectors that don't support multiple
             if (state.dragTarget && state.dragTarget.type == "wire") {
@@ -112,4 +122,4 @@ export default configureStore({
     },
 });
 
-export const { mouseSelect, drag, joinWire } = mainSlice.actions;
+export const { mouseSelect, drag, joinWire,addNode } = mainSlice.actions;
