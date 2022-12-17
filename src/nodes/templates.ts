@@ -49,6 +49,13 @@ export const NODE_TEMPLATES: {[id:string]:NodeTemplate} = {
             type:"wave",
             name:"sig"
         }]
+    }, 
+    out: {
+        width: 50,
+        height: 50,
+        controls: [],
+        inputs: [{type:"wave", name:"sig"}],
+        outputs:[]
     }
 }
 
