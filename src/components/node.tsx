@@ -1,10 +1,13 @@
 import * as React from "react";
 import { AnyControlTemplate, DialControlTemplate, NODE_TEMPLATES } from "../nodes/templates";
-import { Node } from "../state/store";
+import { mouseSelect, Node } from "../state/store";
 import { DialControl } from "./dial.control";
 import { OptionControl } from "./option.control";
+import { useDispatch } from "react-redux";
 
-export function NodeElem(props: { data: Node }) {
+export function NodeElem(props: { data: Node, idx:number }) {
+    const dispatch = useDispatch();
+
     const n = props.data;
     const template = NODE_TEMPLATES[n.template];
     if (!template) {
@@ -27,7 +30,8 @@ export function NodeElem(props: { data: Node }) {
     }
 
     return <g transform={transform}>
-        <rect x="0" y="0" width={template.width} height={template.height} stroke="red" rx="10" ry="10" />
+        <rect x="0" y="0" width={template.width} height={template.height} stroke="red" rx="10" ry="10" 
+        onMouseDown={evt => dispatch(mouseSelect({ type: "node", idx: props.idx }))}/>
         {controls}
         {inputs}
         {outputs}
@@ -42,7 +46,6 @@ function Control(props: AnyControlTemplate & { value: any }) {
         case "option":
             return <OptionControl {...props} value={props.value} />
     }
-    return null;
 }
 
 function InputConnector(props: { y: number, name: string }) {
