@@ -25,7 +25,7 @@ export type RootState = {
 const mainSlice = createSlice({
     name: "main",
     initialState: {
-        nodes: [
+        nodes: [/*
             {
                 x: 10,
                 y: 10,
@@ -52,7 +52,7 @@ const mainSlice = createSlice({
                 y: 300,
                 id: 1,
                 template: "out"
-            }
+            }*/
         ],
         dragTarget: null,
         offset: [0, 0],
@@ -60,7 +60,7 @@ const mainSlice = createSlice({
         wires: []
     },
     reducers: {
-        mouseSelect: (state: MainState, action: { payload: Selected }) => {
+        mouseSelect: (state: MainState, action: { payload: Selected |null}) => {
             if (state.dragTarget == null || action.payload == null) {
                 state.dragTarget = action.payload;
                 console.log("Select drag", state.dragTarget)
@@ -81,33 +81,60 @@ const mainSlice = createSlice({
             state.mousePos = [action.payload[2],action.payload[3]];
         },
         addNode:(state: MainState, action:{payload:{template:string}})=>{
+            const id = state.nodes.length;
             state.nodes.push({
-                id:state.nodes.length,
+                id,
                 x:0,
                 y:0,
                 template:action.payload.template,
                 controlValues: [...NODE_TEMPLATES[action.payload.template].defaultControlValues] 
-            })
+            });
+            const onCreate = NODE_TEMPLATES[action.payload.template].onCreate;
+            if(onCreate){
+                onCreate(id);
+            }
         },
         joinWire: (state: MainState, action: { payload: { isInput: boolean, nodeIdx: number, ioIdx: number } }) => {
             // TODO block pluging into yourself, or loops, or connectors that don't support multiple
             if (state.dragTarget && state.dragTarget.type == "wire") {
-                if (action.payload.isInput) {
-                    state.wires.push({
-                        outNode: state.dragTarget.nodeIdx,
-                        outIdx: state.dragTarget.ioIdx,
-                        inNode: action.payload.nodeIdx,
-                        inIdx: action.payload.ioIdx
-                    })
 
+                let startNodeIdx = action.payload.nodeIdx;
+                let startIoIdx = action.payload.ioIdx;
+
+                let endNodeIdx = state.dragTarget.nodeIdx;
+                let endIoIdx = state.dragTarget.ioIdx;
+
+                console.log("I",action.payload.isInput);
+                if (action.payload.isInput) {
+                    // swap
+                    const a = startNodeIdx;
+                    startNodeIdx = endNodeIdx;
+                    endNodeIdx = a;
+                    // swap
+                    const b =startIoIdx;
+                    startIoIdx=endIoIdx;
+                    endIoIdx=b;
+                } 
+                const startCon = NODE_TEMPLATES[state.nodes[startNodeIdx].template].outputs[startIoIdx];
+                const endCon = NODE_TEMPLATES[state.nodes[endNodeIdx].template].inputs[endIoIdx];
+                if(endCon.onJoin && startCon.getParam){
+                    console.log("Joining properly", startNodeIdx, startCon);
+                    const tmp = startCon.getParam(startNodeIdx);
+                    console.log("tmp",tmp);
+                    endCon.onJoin(tmp, endNodeIdx);
                 } else {
-                    state.wires.push({
-                        outNode: action.payload.nodeIdx,
-                        outIdx: action.payload.ioIdx,
-                        inNode: state.dragTarget.nodeIdx,
-                        inIdx: state.dragTarget.ioIdx
-                    })
+                    console.log("⚠ Cannot join")
                 }
+                const w = {
+                    outNode: startNodeIdx,
+                    outIdx: startIoIdx,
+                    inNode: endNodeIdx,
+                    inIdx: endIoIdx
+                };
+                console.log("W",w)
+
+                state.wires.push(w);
+
                 console.log("WIRE");
             } else {
                 console.log("NOWIRE");

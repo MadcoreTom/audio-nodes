@@ -1,85 +1,42 @@
+import { SOUND } from "../soundsystem";
+import { gainTemplate } from "./gain.template";
+import { oscTemplate } from "./osc.template";
+import { outTemplate } from "./out.template";
+
 export type NodeTemplate = {
     width: number,
-    height:number,
+    height: number,
     controls: AnyControlTemplate[],
-    defaultControlValues: any[],
-    inputs: {type:"control"|"wave", name:string}[],
-    outputs: {type:"control"|"wave", name:string}[]
+    defaultControlValues: any[], // TODO move to controls
+    inputs: { type: "control" | "wave", name: string, onJoin?: (input: AudioNode, myId: number) => any }[],
+    outputs: { type: "control" | "wave", name: string , getParam?:(myId:number)=>AudioNode}[],
+    onCreate?: (idx:number)=>any
     // TODO and more
 }
 
-export const NODE_TEMPLATES: {[id:string]:NodeTemplate} = {
-    gain: {
-        width: 80,
-        height:50,
-        controls: [],
-        inputs: [{
-            type:"wave",
-            name:"gain"
-        }],
-        outputs:[{
-            type:"wave",
-            name:"sig"
-        }],
-        defaultControlValues:[]
-    },
-    osc: {
-        width: 100,
-        height: 150,
-        controls: [{
-            type:"dial",
-            x:20,
-            y:20,
-            label: "freq",
-            min: 100,
-            max:1000
-        },{
-            type:"option",
-            x:120,
-            y:20,
-            label: "shape",
-            options: ["SIN","SAW","SQR"]
-        }],
-        inputs: [{
-            type:"wave",
-            name:"freq"
-        },{
-            type:"control",
-            name:"sync"
-        }],
-        outputs:[{
-            type:"wave",
-            name:"sig"
-        }],
-        defaultControlValues:[200, "SAW"]
-    }, 
-    out: {
-        width: 50,
-        height: 50,
-        controls: [],
-        inputs: [{type:"wave", name:"sig"}],
-        outputs:[],
-        defaultControlValues:[]
-    }
+export const NODE_TEMPLATES: { [id: string]: NodeTemplate } = {
+    gain: gainTemplate,
+    osc: oscTemplate,
+    out: outTemplate
 }
 
 
-export type ControlTemplate ={
-    y:number,
-    x:number,
-    label:string,
+export type ControlTemplate = {
+    y: number,
+    x: number,
+    label: string,
     type: string
 }
 
 export type DialControlTemplate = ControlTemplate & {
     type: "dial",
-    min:number,
-    max:number
+    min: number,
+    max: number
 }
 
 export type OptionControlTemplate = ControlTemplate & {
     type: "option",
-    options:string[]
+    options: string[]
 }
 
 export type AnyControlTemplate = DialControlTemplate | OptionControlTemplate;

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { DialControlTemplate, OptionControlTemplate } from "../nodes/templates";
+import { OptionControlTemplate } from "../nodes/templates";
 
 export function OptionControl(props: OptionControlTemplate & {value:string}) {
     const transform = `translate(${props.x},${props.y})`;

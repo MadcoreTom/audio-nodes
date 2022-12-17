@@ -23,6 +23,7 @@ export function NodeElem(props: { data: Node, idx: number }) {
         inputs = template.inputs.map((inp, idx) => <InputConnector y={(idx + 1) * step} name={inp.name}
             onMouseDown={() => dispatch(mouseSelect({ type: "wire", isInput: true, nodeIdx: props.idx, ioIdx: idx }))}
             onMouseUp={() => dispatch(joinWire({ isInput: true, nodeIdx: props.idx, ioIdx: idx }))}
+            key={idx}
         />)
     }
 
@@ -32,6 +33,7 @@ export function NodeElem(props: { data: Node, idx: number }) {
         outputs = template.outputs.map((inp, idx) => <OutputConnector x={template.width} y={(idx + 1) * step} name={inp.name}
             onMouseDown={() => dispatch(mouseSelect({ type: "wire", isInput: false, nodeIdx: props.idx, ioIdx: idx }))}
             onMouseUp={() => dispatch(joinWire({ isInput: false, nodeIdx: props.idx, ioIdx: idx }))}
+            key={idx}
         />)
     }
 
