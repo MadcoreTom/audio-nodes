@@ -25,7 +25,8 @@ function Controls(){
 
     return <div style={{background:"green"}}>
         <button onClick={()=>dispatch(addNode({template:"gain"}))}>Gain</button>
-        <button onClick={()=>dispatch(addNode({template:"osc"}))}>Osc</button>
+        <button onClick={()=>dispatch(addNode({template:"LFO"}))}>Osc Low</button>
+        <button onClick={()=>dispatch(addNode({template:"HFO"}))}>Osc High</button>
         <button onClick={()=>dispatch(addNode({template:"out"}))}>Out</button>
     </div>
 }

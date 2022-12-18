@@ -15,7 +15,7 @@ export function NodeElem(props: { data: Node, idx: number }) {
     }
     const transform = `translate(${n.x},${n.y})`;
 
-    const controls = template.controls.map((c, i) => <Control {...c} value={n.controlValues[i]} key={i} />)
+    const controls = template.controls.map((c, i) => <Control {...c} value={n.controlValues[i]} key={i} nodeIdx={props.idx} />)
 
     let inputs: JSX.Element[] | null = null;
     if (template.inputs.length > 0) {
@@ -40,6 +40,7 @@ export function NodeElem(props: { data: Node, idx: number }) {
     return <g transform={transform}>
         <rect x="0" y="0" width={template.width} height={template.height} stroke="#ff4f69" rx="10" ry="10"
             onMouseDown={evt => dispatch(mouseSelect({ type: "node", idx: props.idx }))} />
+        <text x="12" y="10" fontSize="12px" textAnchor="start" fill="#ff4f69" >{n.template.toUpperCase()}</text>
         {controls}
         {inputs}
         {outputs}
@@ -47,12 +48,12 @@ export function NodeElem(props: { data: Node, idx: number }) {
 
 }
 
-function Control(props: AnyControlTemplate & { value: any }) {
+function Control(props: AnyControlTemplate & { value: any, nodeIdx: number }) {
     switch (props.type) {
         case "dial":
-            return <DialControl {...props as DialControlTemplate} value={props.value} />
+            return <DialControl {...props as DialControlTemplate} value={props.value}  nodeIdx={props.nodeIdx}/>
         case "option":
-            return <OptionControl {...props} value={props.value} />
+            return <OptionControl {...props} value={props.value} nodeIdx={props.nodeIdx} />
     }
 }
 

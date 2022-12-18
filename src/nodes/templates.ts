@@ -1,6 +1,5 @@
-import { SOUND } from "../soundsystem";
 import { gainTemplate } from "./gain.template";
-import { oscTemplate } from "./osc.template";
+import { lfoTemplate, hfoTemplate } from "./osc.template";
 import { outTemplate } from "./out.template";
 
 export type NodeTemplate = {
@@ -16,7 +15,8 @@ export type NodeTemplate = {
 
 export const NODE_TEMPLATES: { [id: string]: NodeTemplate } = {
     gain: gainTemplate,
-    osc: oscTemplate,
+    LFO: lfoTemplate,
+    HFO: hfoTemplate,
     out: outTemplate
 }
 
@@ -25,7 +25,9 @@ export type ControlTemplate = {
     y: number,
     x: number,
     label: string,
-    type: string
+    type: string,
+    onChange?:(value:any, nodeIdx:number)=>void,
+    onDrag?:(delta:number, nodeIdx:number, curValue:number)=>number
 }
 
 export type DialControlTemplate = ControlTemplate & {

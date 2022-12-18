@@ -8,7 +8,7 @@ export type Node = {
     controlValues: any[]
 }
 
-export type Selected = { type: "everything" } | { type: "node", idx: number } | {type:'wire',nodeIdx:number,isInput:boolean,ioIdx:number};
+export type Selected = { type: "everything" } | { type: "node", idx: number } | {type:'wire',nodeIdx:number,isInput:boolean,ioIdx:number} | {type:"control", nodeIdx:number,label:string};
 
 export type MainState = {
     nodes: Node[],
@@ -25,35 +25,7 @@ export type RootState = {
 const mainSlice = createSlice({
     name: "main",
     initialState: {
-        nodes: [/*
-            {
-                x: 10,
-                y: 10,
-                id: 1,
-                template: "gain",
-                controlValues: []
-            },
-            {
-                x: 120,
-                y: 10,
-                id: 1,
-                template: "gain",
-                controlValues: []
-            },
-            {
-                x: 250,
-                y: 300,
-                id: 1,
-                template: "osc",
-                controlValues: [30, "SQR"]
-            },
-            {
-                x: 500,
-                y: 300,
-                id: 1,
-                template: "out"
-            }*/
-        ],
+        nodes: [],
         dragTarget: null,
         offset: [0, 0],
         mousePos:[0,0],
@@ -75,7 +47,21 @@ const mainSlice = createSlice({
                         break;
                     case "node":
                         const n = state.nodes[dragTarget.idx];
-                        state.nodes[dragTarget.idx] = {...n,x:n.x+action.payload[0],y:n.y+action.payload[1]}
+                        state.nodes[dragTarget.idx] = {...n,x:n.x+action.payload[0],y:n.y+action.payload[1]};
+                        break;
+                    case "control":
+                        {
+                            const n = state.nodes[dragTarget.nodeIdx];
+                            const t=NODE_TEMPLATES[n.template];
+                            t.controls.forEach((c,idx)=>{
+                               if(c.label == dragTarget.label && c.onDrag) {
+                                const newValue = c.onDrag(action.payload[1], dragTarget.nodeIdx, n.controlValues[idx]);
+                                const newControlValues = n.controlValues.map((v,i)=>i == idx ? newValue : v);
+                                state.nodes[dragTarget.nodeIdx] = {...n, controlValues:newControlValues};
+                               }
+                            })                            
+                        }
+                        break;
                 }
             }
             state.mousePos = [action.payload[2],action.payload[3]];
@@ -94,6 +80,20 @@ const mainSlice = createSlice({
                 onCreate(id);
             }
         },
+        setControlValue:(state: MainState, action: { payload: { value: any, nodeIdx: number, label:string } })=>{
+            console.log(`Setting control value to ${action.payload.value} for control ${action.payload.label} and node index ${action.payload.nodeIdx}`)
+            const n = state.nodes[action.payload.nodeIdx];
+            const t = NODE_TEMPLATES[n.template];
+            const controlIdx=t.controls.findIndex(c=>c.label == action.payload.label);
+            const newControlValues = n.controlValues.map((v,i)=>i == controlIdx ? action.payload.value : v);
+            console.log("ControlValues", n.controlValues, newControlValues)
+            state.nodes[action.payload.nodeIdx] = {...n,controlValues: newControlValues};
+            const ctrl=t.controls[controlIdx];
+            if(ctrl.onChange){
+                ctrl.onChange(action.payload.value, action.payload.nodeIdx);
+            }
+        }
+        ,
         joinWire: (state: MainState, action: { payload: { isInput: boolean, nodeIdx: number, ioIdx: number } }) => {
             // TODO block pluging into yourself, or loops, or connectors that don't support multiple
             if (state.dragTarget && state.dragTarget.type == "wire") {
@@ -149,4 +149,4 @@ export default configureStore({
     },
 });
 
-export const { mouseSelect, drag, joinWire,addNode } = mainSlice.actions;
+export const { mouseSelect, drag, joinWire,addNode,setControlValue } = mainSlice.actions;

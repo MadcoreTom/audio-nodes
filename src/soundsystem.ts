@@ -15,12 +15,15 @@ class Sound {
     }
 
     public getNode(key:string):AudioNode{
-        console.log("getNode",key,Object.keys(this.nodes))
         return this.nodes[key];
     }
     public addNode(key:string, create:(AudioContext)=>AudioNode){
         console.log("Add node",key)
         return this.nodes[key] = create(this.audioCtx);
+    }
+
+    public now():number{
+        return this.audioCtx.currentTime;
     }
 }
 
