@@ -18,7 +18,7 @@ function createOscTemplate(min: number, max: number): NodeTemplate {
                 x: 90,
                 y: 20,
                 label: "shape",
-                options: ["SIN", "SAW", "SQR"],
+                options: ["SIN", "SAW", "SQR", "TRI"],
                 onChange: (value: any, nodeIdx: number) => {
                     const node = (SOUND.getNode("" + nodeIdx) as OscillatorNode);
                     switch (value) {
@@ -30,6 +30,9 @@ function createOscTemplate(min: number, max: number): NodeTemplate {
                             break;
                         case "SQR":
                             node.type = "square";
+                            break;
+                        case "TRI":
+                            node.type = "triangle";
                             break;
                     }
                 }
