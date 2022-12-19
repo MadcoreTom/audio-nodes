@@ -1,14 +1,19 @@
+import { envelopeTemplate } from "./envelope.template";
 import { gainTemplate } from "./gain.template";
 import { lfoTemplate, hfoTemplate } from "./osc.template";
 import { outTemplate } from "./out.template";
+import { padTemplate } from "./pad.template";
+
+export type OutputConnector = { type: "wave", name: string, getParam?: (myId: number) => AudioNode } | { type: "trigger", name: string };
+export type InputConnector = { type: "control", name: string, trigger: (time: number, myId:number, controlValues:any[]) => void } | { type: "wave", name: string, onJoin?: (input: AudioNode, myId: number) => any };
 
 export type NodeTemplate = {
     width: number,
     height: number,
     controls: AnyControlTemplate[],
     defaultControlValues: any[], // TODO move to controls
-    inputs: { type: "control" | "wave", name: string, onJoin?: (input: AudioNode, myId: number) => any }[],
-    outputs: { type: "control" | "wave", name: string , getParam?:(myId:number)=>AudioNode}[],
+    inputs: InputConnector[],
+    outputs: OutputConnector[],
     onCreate?: (idx:number)=>any
     // TODO and more
 }
@@ -17,7 +22,9 @@ export const NODE_TEMPLATES: { [id: string]: NodeTemplate } = {
     gain: gainTemplate,
     LFO: lfoTemplate,
     HFO: hfoTemplate,
-    out: outTemplate
+    out: outTemplate,
+    pad: padTemplate,
+    env: envelopeTemplate,
 }
 
 

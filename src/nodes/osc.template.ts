@@ -12,7 +12,7 @@ function createOscTemplate(min: number, max: number): NodeTemplate {
         width: 160,
         height: 120,
         controls: [
-            createDialControl(40, 20, "freq", min, max, nodeIdx => (SOUND.getNode("" + nodeIdx) as OscillatorNode).frequency)
+            createDialControl(40, 20, "freq", min, max, nodeIdx => getOscNode(nodeIdx).frequency)
             , {
                 type: "option",
                 x: 90,
@@ -20,7 +20,7 @@ function createOscTemplate(min: number, max: number): NodeTemplate {
                 label: "shape",
                 options: ["SIN", "SAW", "SQR", "TRI"],
                 onChange: (value: any, nodeIdx: number) => {
-                    const node = (SOUND.getNode("" + nodeIdx) as OscillatorNode);
+                    const node = getOscNode(nodeIdx);
                     switch (value) {
                         case "SIN":
                             node.type = "sine";
@@ -41,25 +41,40 @@ function createOscTemplate(min: number, max: number): NodeTemplate {
             type: "wave",
             name: "detu",
             onJoin: (inputNode, myId) => {
-                inputNode.connect((SOUND.getNode("" + myId) as OscillatorNode).detune)
+                inputNode.connect(getOscNode(myId).detune)
             }
         }, {
             type: "control",
-            name: "sync"
+            name: "sync",
+            trigger: (time: number, myId: number) => {
+                getDelayNode(myId).delayTime.setValueAtTime(time % (1/getOscNode(myId).frequency.value),time);
+                console.log("Sync triggered")
+            }
         }],
         outputs: [{
             type: "wave",
             name: "sig",
-            getParam: (idx) => { console.log("Get para,", idx); return SOUND.getNode("" + idx) }
+            getParam: (idx) => { console.log("Get para,", idx); return getDelayNode(idx) }
         }],
         defaultControlValues: [200, "SAW"],
         onCreate: (idx) => {
-            SOUND.addNode("" + idx, ctx => {
+            SOUND.addNode(idx + "-osc", ctx => {
                 const osc = ctx.createOscillator() as OscillatorNode;
                 osc.type = "sawtooth";
                 osc.start();
                 return osc;
-            })
+            });
+            SOUND.addNode(idx + "-del", (ctx:AudioContext) => {
+                return ctx.createDelay(5);
+            });
+            getOscNode(idx).connect(getDelayNode(idx));
         }
     };
+}
+
+function getOscNode(idx: number) {
+    return SOUND.getNode(idx + "-osc") as OscillatorNode
+}
+function getDelayNode(idx: number) {
+    return SOUND.getNode(idx + "-del") as DelayNode
 }

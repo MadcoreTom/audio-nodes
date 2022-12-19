@@ -1,5 +1,6 @@
 import { configureStore, createSlice } from '@reduxjs/toolkit'
 import { NODE_TEMPLATES } from '../nodes/templates';
+import { SOUND } from '../soundsystem';
 export type Node = {
     x: number,
     y: number,
@@ -35,7 +36,7 @@ const mainSlice = createSlice({
         mouseSelect: (state: MainState, action: { payload: Selected |null}) => {
             if (state.dragTarget == null || action.payload == null) {
                 state.dragTarget = action.payload;
-                console.log("Select drag", state.dragTarget)
+                // console.log("Select drag", state.dragTarget)
             }
         },
         drag: (state: MainState, action: { payload: number[] }) => {
@@ -117,12 +118,15 @@ const mainSlice = createSlice({
                 } 
                 const startCon = NODE_TEMPLATES[state.nodes[startNodeIdx].template].outputs[startIoIdx];
                 const endCon = NODE_TEMPLATES[state.nodes[endNodeIdx].template].inputs[endIoIdx];
-                if(endCon.onJoin && startCon.getParam){
+                if(endCon.type == "wave" && startCon.type == "wave" && endCon.onJoin && startCon.getParam){
                     console.log("Joining properly", startNodeIdx, startCon);
                     const tmp = startCon.getParam(startNodeIdx);
                     console.log("tmp",tmp);
                     endCon.onJoin(tmp, endNodeIdx);
-                } else {
+                } else if(endCon.type=="control" && startCon.type == "trigger" && endCon.trigger){
+                    const  cv  = [...state.nodes[endNodeIdx].controlValues];
+                    SOUND.subscribe(startNodeIdx + startCon.name, t=>endCon.trigger(t,endNodeIdx,cv))
+                }else {
                     console.log("⚠ Cannot join")
                 }
                 const w = {

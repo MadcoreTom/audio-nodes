@@ -14,6 +14,12 @@ export const gainTemplate: NodeTemplate = {
         onJoin: (inputNode, myId) => {
             inputNode.connect(SOUND.getNode("" + myId) as GainNode)
         }
+    },{
+        type: "wave",
+        name: "gain",
+        onJoin: (inputNode, myId) => {
+            inputNode.connect((SOUND.getNode("" + myId) as GainNode).gain)
+        }
     }],
     outputs: [{
         type: "wave",

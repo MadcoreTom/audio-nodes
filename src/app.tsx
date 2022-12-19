@@ -28,5 +28,7 @@ function Controls(){
         <button onClick={()=>dispatch(addNode({template:"LFO"}))}>Osc Low</button>
         <button onClick={()=>dispatch(addNode({template:"HFO"}))}>Osc High</button>
         <button onClick={()=>dispatch(addNode({template:"out"}))}>Out</button>
+        <button onClick={()=>dispatch(addNode({template:"pad"}))}>Pad</button>
+        <button onClick={()=>dispatch(addNode({template:"env"}))}>Envelope</button>
     </div>
 }
